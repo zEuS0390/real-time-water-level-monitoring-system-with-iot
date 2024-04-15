@@ -20,6 +20,9 @@ public:
     // Categorize rain intensity based on threshold
     if (analog_value < RAIN_HEAVY_THRESHOLD)
       rainintensity.type = RainIntensityType::_HEAVY;
+    else {
+      rainintensity.type = RainIntensityType::_LIGHT;
+    }
     return rainintensity;
   }
 };
