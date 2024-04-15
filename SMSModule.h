@@ -1,12 +1,20 @@
 #ifndef SMS_MODULE_H
 #define SMS_MODULE_H
 
-#include <SoftwareSerial.h>
+#include <SoftwareSerial.h> // Include the SoftwareSerial library for GSM module communication
+#include "constants.h"
 
+// Class for interfacing with the GSM module
 class SMSModule {
 public:
+    // Constructor to initialize GSM module pins and phone number
     SMSModule(int rxPin, int txPin, String phoneNumber) : sim(rxPin, txPin), number(phoneNumber) {}
 
+    void init() {
+      sim.begin(SMS_MODULE_BAUD_RATE);
+    }
+
+    // Method to send an SMS message
     void sendMessage(const String& message) {
         sim.println("AT+CMGF=1");    // Sets the GSM Module in Text Mode
         delay(200);
@@ -21,6 +29,7 @@ public:
         _buffer = _readSerial();
     }
 
+    // Method to receive SMS messages
     void receiveMessage() {
         Serial.println("SIM800L Read an SMS");
         sim.println("AT+CMGF=1");
@@ -30,6 +39,7 @@ public:
         Serial.println("Unread Message done");
     }
 
+    // Method to make a call
     void callNumber() {
         sim.print(F("ATD"));
         sim.print(number);
@@ -39,11 +49,12 @@ public:
     }
 
 private:
-    SoftwareSerial sim;
-    int _timeout;
-    String _buffer;
-    String number;
+    SoftwareSerial sim;     // Instance of SoftwareSerial for GSM communication
+    int _timeout;           // Timeout for communication
+    String _buffer;         // Buffer for storing received data
+    String number;          // Phone number for SMS and call
 
+    // Method to read data from serial buffer
     String _readSerial() {
         _timeout = 0;
         while (!sim.available() && _timeout < 12000) {
