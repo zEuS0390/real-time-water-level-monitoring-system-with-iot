@@ -3,11 +3,11 @@
 
 #include "sensor_enums.h"
 
-// Template struct to hold the result of an analog sensor readings and types
+// Template struct to hold the result
 template <typename T>
-struct AnalogSensorResult {
-  unsigned int analog_value = 0;    // Holds the analog value read by the sensor, the default value is 0
-  T type = T::_NULL;                // Represents the type or status of the sensor reading, the default value is T::_NULL
+struct Result {
+  int value = 0;	// Holds a value, and its default is 0
+  T type = T::_NULL;	// Represents the type or status of the result, the default value is T::_NULL
 };
 
 #endif
