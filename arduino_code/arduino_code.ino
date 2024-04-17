@@ -4,6 +4,7 @@
 #include "RainSensor.h"
 #include "WaterLevelSensor.h"
 #include "UltrasonicSensor.h"
+#include <ArduinoJson.h>
 
 // Create instances of classes
 WaterLevelSensor        waterlevel_sensor     (WATER_LEVEL_SENSOR_PIN);
@@ -26,15 +27,18 @@ void loop() {
   Result  <WaterLevelType>    waterlevel    =  waterlevel_sensor.read();
   Result  <DistanceType>      distance      =  ultrasonic_sensor.read();
 
-  Serial.print("R: ");
-  Serial.print(rainintensity.value);
-  Serial.print(" | ");
-  Serial.print("W: ");
-  Serial.print(waterlevel.value);
-  Serial.print(" | ");
-  Serial.print("D: ");
-  Serial.print(distance.value);
-  Serial.println();
+  // Create a JSON object
+  StaticJsonDocument<200> doc;
+  doc["group11/rain"] = rainintensity.value;
+  doc["group11/water"] = waterlevel.value;
+  doc["group11/distance"] = distance.value;
+
+  // Serialize the JSON object to a string
+  String jsonString;
+  serializeJson(doc, jsonString);
+
+  // Print the JSON string over the serial port
+  Serial.println(jsonString);
 
   delay(1000);
 }
