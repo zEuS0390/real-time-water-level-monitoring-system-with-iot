@@ -5,17 +5,16 @@
 #include "AnalogSensor.h"
 #include "sensor_structs.h"
 
-// Subclass for rain sensor, inherits from AnalogSensor
-class RainSensor : public AnalogSensor {
+class RainSensor: public AnalogSensor<1> {
 public:
-  // Constructor to initialize analog pin
-  RainSensor(const unsigned int pin) : AnalogSensor(pin) {}
+    // Constructor to initialize rain sensor with pin number
+  RainSensor(const unsigned int pin): AnalogSensor<1>(pin) {}
 
   // Method to read rain intensity from the sensor
-  AnalogSensorResult <RainIntensityType> read() {
-    AnalogSensorResult <RainIntensityType> rainintensity ;
-    const int analog_value = AnalogSensor::read();
-    rainintensity.analog_value = analog_value;
+  Result <RainIntensityType> read() {
+    Result <RainIntensityType> rainintensity;
+    const int analog_value = AnalogSensor<1>::read(0);
+    rainintensity.value = analog_value;
 
     // Categorize rain intensity based on threshold
     if (analog_value < RAIN_HEAVY_THRESHOLD)

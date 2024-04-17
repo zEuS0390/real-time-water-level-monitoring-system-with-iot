@@ -6,18 +6,18 @@
 #include "sensor_structs.h"
 
 // Subclass for water level sensor, inherits from AnalogSensor
-class WaterLevelSensor : public AnalogSensor {
+class WaterLevelSensor : public AnalogSensor<1> {
 public:
     // Constructor to initialize analog pin
-    WaterLevelSensor(const unsigned int pin) : AnalogSensor(pin) {}
+    WaterLevelSensor(const unsigned int pin) : AnalogSensor<1>(pin) {}
 
     // Method to read water level from the sensor
-    AnalogSensorResult <WaterLevelType> read() {
-        AnalogSensorResult <WaterLevelType> waterlevel;
-        const int analog_value = AnalogSensor::read();
+    Result <WaterLevelType> read() {
+        Result <WaterLevelType> waterlevel;
+        const int analog_value = AnalogSensor<1>::read(0);
 
         // Categorize water level based on thresholds
-        waterlevel.analog_value = analog_value;
+        waterlevel.value = analog_value;
         if (analog_value == WATER_EMPTY_THRESHOLD)
             waterlevel.type = WaterLevelType::_EMPTY;
         else if (analog_value > WATER_EMPTY_THRESHOLD && analog_value <= WATER_LOW_THRESHOLD)
