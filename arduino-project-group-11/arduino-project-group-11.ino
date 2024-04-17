@@ -3,36 +3,38 @@
 #include "sensor_structs.h"
 #include "RainSensor.h"
 #include "WaterLevelSensor.h"
-#include "SMSModule.h"
+#include "UltrasonicSensor.h"
 
-// Create instances of sensor classes
-SMSModule           sms_module          (SMS_MODULE_RX_PIN,
-                                         SMS_MODULE_TX_PIN,
-                                         SMS_MODULE_PHONE_NUMBER);
-WaterLevelSensor    waterlevel_sensor   (WATER_LEVEL_SENSOR_PIN);
-RainSensor          rain_sensor         (RAIN_SENSOR_PIN);
+// Create instances of classes
+WaterLevelSensor        waterlevel_sensor     (WATER_LEVEL_SENSOR_PIN);
+RainSensor              rain_sensor           (RAIN_SENSOR_PIN);
+UltrasonicSensor        ultrasonic_sensor     (ULTRASONIC_SENSOR_TRIGGER_PIN, 
+                                               ULTRASONIC_SENSOR_ECHO_PIN);
 
 // Setup function, executed once on startup
 void setup() {
   Serial.begin(SERIAL_COMMUNICATION_BAUD_RATE); // Initialize serial communication
-  sms_module.init();
+  rain_sensor.init(INPUT);
+  waterlevel_sensor.init(INPUT);
+  ultrasonic_sensor.init(OUTPUT, INPUT);
 }
 
 // Main loop function, continuously reads sensor values and prints them
 void loop() {
-  // Read sensor values
-  AnalogSensorResult <RainIntensityType> rainintensity = rain_sensor.read(); // Read rain sensor
-  AnalogSensorResult <WaterLevelType> waterlevel = waterlevel_sensor.read(); // Read water level sensor
 
-  Serial.print(rainintensity.analog_value);
-  Serial.print(' ');
-  Serial.print(static_cast<int>(rainintensity.type));
+  Result  <RainIntensityType> rainintensity =  rain_sensor.read();
+  Result  <WaterLevelType>    waterlevel    =  waterlevel_sensor.read();
+  Result  <DistanceType>      distance      =  ultrasonic_sensor.read();
 
+  Serial.print("R: ");
+  Serial.print(rainintensity.value);
   Serial.print(" | ");
-
-  Serial.print(waterlevel.analog_value);
-  Serial.print(' ');
-  Serial.println(static_cast<int>(waterlevel.type));
+  Serial.print("W: ");
+  Serial.print(waterlevel.value);
+  Serial.print(" | ");
+  Serial.print("D: ");
+  Serial.print(distance.value);
+  Serial.println();
 
   delay(1000);
 }
