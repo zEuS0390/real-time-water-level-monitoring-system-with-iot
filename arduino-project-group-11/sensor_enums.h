@@ -17,4 +17,9 @@ enum class WaterLevelType {
   _HIGH     // High water level
 };
 
+// Enum to represent different distances
+enum class DistanceType {
+  _NULL
+};
+
 #endif

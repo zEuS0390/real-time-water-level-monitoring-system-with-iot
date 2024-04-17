@@ -17,5 +17,7 @@
 #define WATER_LOW_THRESHOLD                 350
 #define WATER_MEDIUM_THRESHOLD              450
 #define WATER_HIGH_THRESHOLD                1023
+#define ULTRASONIC_SENSOR_TRIGGER_PIN       5
+#define ULTRASONIC_SENSOR_ECHO_PIN          6
 
 #endif
