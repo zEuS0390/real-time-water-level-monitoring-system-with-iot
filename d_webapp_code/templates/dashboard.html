@@ -1,0 +1,66 @@
+{% extends 'base.html' %} {% block title %}Dashboard{% endblock %} {% block
+content %}
+
+<div class="sensor-container">
+  <p class="sensor-title">RAIN INTENSITY</p>
+  <div class="sensor-details">
+    <img
+      src="{{ url_for('static', filename='images/rain.png') }}"
+      width="64"
+      height="64"
+      alt=""
+    />
+    <span id="rain" class="sensor-value">0</span>
+  </div>
+</div>
+
+<div class="sensor-container">
+  <p class="sensor-title">WATER LEVEL</p>
+  <div class="sensor-details">
+    <img
+      src="{{ url_for('static', filename='images/water.png') }}"
+      width="64"
+      height="64"
+      alt=""
+    />
+    <span id="water" style="font-size: 60px">0</span>
+  </div>
+</div>
+
+<div class="sensor-container">
+  <p class="sensor-title">DISTANCE</p>
+  <div class="sensor-details">
+    <img
+      src="{{ url_for('static', filename='images/distance.png') }}"
+      width="64"
+      height="64"
+      alt=""
+    />
+    <span id="distance" style="font-size: 60px">0</span>
+  </div>
+</div>
+
+<script type="text/javascript" charset="utf-8">
+  let socket = io();
+  const rain = document.querySelector("#rain");
+  const water = document.querySelector("#water");
+  const distance = document.querySelector("#distance");
+
+  socket.on("connect", () => console.log("I'm connected!"));
+  socket.on("group11/rain", (data) => {
+    // Categorize rain intensity based on threshold
+    const value = Number(data);
+    if (value < 300) rain.innerHTML = `${value} (HEAVY)`;
+    else rain.innerHTML = `${value} (LIGHT)`;
+  });
+  socket.on("group11/water", (data) => {
+    const value = Number(data);
+    if (value == 0) water.innerHTML = `${value} (EMPTY)`;
+    else if (value > 0 && value <= 350) water.innerHTML = `${value} (LOW)`;
+    else if (value > 350 && value < 450) water.innerHTML = `${value} (MEDIUM)`;
+    else if (value >= 450 && value <= 1023) water.innerHTML = `${value} (HIGH)`;
+  });
+  socket.on("group11/distance", (data) => (distance.innerHTML = `${data} cm`));
+</script>
+
+{% endblock %}
