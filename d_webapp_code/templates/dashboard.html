@@ -56,9 +56,8 @@ content %}
   socket.on("group11/water", (data) => {
     const value = Number(data);
     if (value == 0) water.innerHTML = `${value} (EMPTY)`;
-    else if (value > 0 && value <= 350) water.innerHTML = `${value} (LOW)`;
-    else if (value > 350 && value < 450) water.innerHTML = `${value} (MEDIUM)`;
-    else if (value >= 450 && value <= 1023) water.innerHTML = `${value} (HIGH)`;
+    else if (value > 0 && value <= 400) water.innerHTML = `${value} (LOW)`;
+    else if (value >= 400 && value <= 800) water.innerHTML = `${value} (HIGH)`;
   });
   socket.on("group11/distance", (data) => (distance.innerHTML = `${data} cm`));
 </script>
