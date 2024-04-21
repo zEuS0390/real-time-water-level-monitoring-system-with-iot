@@ -47,19 +47,21 @@ content %}
   const distance = document.querySelector("#distance");
 
   socket.on("connect", () => console.log("I'm connected!"));
-  socket.on("group11/rain", (data) => {
-    // Categorize rain intensity based on threshold
-    const value = Number(data);
-    if (value < 300) rain.innerHTML = `${value} (HEAVY)`;
-    else rain.innerHTML = `${value} (LIGHT)`;
+  socket.on("group11", (data) => {
+    const deserializedData = JSON.parse(data);
+    const receivedData = deserializedData.group11;
+    if (receivedData) {
+      rain.innerHTML = receivedData.rain
+        ? `${receivedData.rain.value} (${receivedData.rain.type})`
+        : "";
+      water.innerHTML = receivedData.water
+        ? `${receivedData.water.value} (${receivedData.water.type})`
+        : "";
+      distance.innerHTML = receivedData.distance
+        ? `${receivedData.distance.value} CM`
+        : "";
+    }
   });
-  socket.on("group11/water", (data) => {
-    const value = Number(data);
-    if (value == 0) water.innerHTML = `${value} (EMPTY)`;
-    else if (value > 0 && value <= 400) water.innerHTML = `${value} (LOW)`;
-    else if (value >= 400 && value <= 800) water.innerHTML = `${value} (HIGH)`;
-  });
-  socket.on("group11/distance", (data) => (distance.innerHTML = `${data} cm`));
 </script>
 
 {% endblock %}
