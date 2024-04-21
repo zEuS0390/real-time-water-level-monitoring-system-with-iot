@@ -9,10 +9,6 @@ const char* mqtt_server = "192.168.148.197";
 const char* mqtt_username = "user";
 const char* mqtt_password = "pass123";
 
-const char* mqtt_topic_rain = "group11/rain";
-const char* mqtt_topic_water = "group11/water";
-const char* mqtt_topic_distance = "group11/distance";
-
 WiFiClient espClient;
 PubSubClient client(espClient); 
 
@@ -82,36 +78,16 @@ void loop() {
   }
   if (Serial.available() > 0) {
     String jsonStr = Serial.readStringUntil('\n');
-    StaticJsonDocument<200> doc;
-    DeserializationError error = deserializeJson(doc, jsonStr);
+    StaticJsonDocument<200> mainDoc;
+    DeserializationError error = deserializeJson(mainDoc, jsonStr);
     if (!error) {
-
-      if (doc.containsKey("wifi_network_ssid") && doc.containsKey("wifi_network_password")) {
+      if (mainDoc.containsKey("wifi_network_ssid") && mainDoc.containsKey("wifi_network_password")) {
         WiFi.disconnect();
-        const char* ssid = doc["wifi_network_ssid"];
-        const char* password = doc["wifi_network_password"];
+        const char* ssid = mainDoc["wifi_network_ssid"];
+        const char* password = mainDoc["wifi_network_password"];
         connectToWiFiNetwork(ssid, password);
       }
-
-      if (doc.containsKey("group11/rain") || doc.containsKey("group11/water") || doc.containsKey("group11/distance")) {
-        // Extract rain and water values
-        int rainValue = doc["group11/rain"];
-        int waterValue = doc["group11/water"];
-        int distanceValue = doc["group11/distance"];
-        
-        // Publish the values to MQTT topics
-        char rainBuffer[10];
-        char waterBuffer[10];
-        char distanceBuffer[10];
-        itoa(rainValue, rainBuffer, 10);
-        itoa(waterValue, waterBuffer, 10);
-        itoa(distanceValue, distanceBuffer, 10);
-        
-        client.publish(mqtt_topic_rain, rainBuffer);
-        client.publish(mqtt_topic_water, waterBuffer);
-        client.publish(mqtt_topic_distance, distanceBuffer);
-      }
-      
+      client.publish("group11", jsonStr.c_str());
     } else {
       Serial.print("Parsing failed: ");
       Serial.println(error.c_str());
