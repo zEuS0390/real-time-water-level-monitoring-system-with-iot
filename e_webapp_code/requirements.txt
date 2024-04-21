@@ -3,5 +3,5 @@ flask-login
 flask-sqlalchemy
 flask-wtf
 flask-bcrypt
-flask-mqtt
+paho-mqtt
 flask-socketio
