@@ -2,6 +2,7 @@
 #include <Group11Arduino.h>
 #include <ArduinoJson.h>
 #include <LiquidCrystal_I2C.h>
+#include <HardwareSerial.h>
 
 // Define constants for configuration
 #define SERIAL_COMMUNICATION_BAUD_RATE      9600
@@ -12,6 +13,11 @@
 #define RAIN_SENSOR_PIN                     A3
 #define ULTRASONIC_SENSOR_TRIGGER_PIN       5
 #define ULTRASONIC_SENSOR_ECHO_PIN          6
+#define RAIN_HEAVY_THRESHOLD                300
+#define WATER_EMPTY_THRESHOLD               0
+#define WATER_LOW_THRESHOLD                 350
+#define WATER_MEDIUM_THRESHOLD              450
+#define WATER_HIGH_THRESHOLD                1023
 
 // Use the Group11Arduino namespace
 using namespace Group11Arduino;    
@@ -39,9 +45,12 @@ void setup() {
 void loop() {
 
   // Read sensor values
-  Result<RainIntensityType> rainintensity =  rain_sensor.read();        // Read rain sensor
-  Result<WaterLevelType>    waterlevel    =  waterlevel_sensor.read();  // Read water level sensor
-  Result<DistanceType>      distance      =  ultrasonic_sensor.read();  // Read ultrasonic sensor
+  Result<RainIntensityType> rainintensity =  rain_sensor.read(RAIN_HEAVY_THRESHOLD);            // Read rain sensor
+  Result<WaterLevelType>    waterlevel    =  waterlevel_sensor.read(WATER_EMPTY_THRESHOLD,
+                                                                    WATER_LOW_THRESHOLD,
+                                                                    WATER_MEDIUM_THRESHOLD,
+                                                                    WATER_HIGH_THRESHOLD);      // Read water level sensor
+  Result<DistanceType>      distance      =  ultrasonic_sensor.read();                          // Read ultrasonic sensor
 
   // Print sensor values on LCD
   lcd.setCursor(0, 0);
@@ -69,21 +78,7 @@ void loop() {
   sensorValues["water"]["value"] = waterlevel.value;                  // Store water level value
   sensorValues["water"]["type"] = enumToString(waterlevel.type);      // Store water level type
   sensorValues["distance"]["value"] = distance.value;                 // Store distance value
-
-  // Check if there is any serial input available
-  if (Serial.available() > 0) {
-    // Read serial input until newline character
-    String jsonStr = Serial.readStringUntil('\n');         
-    StaticJsonDocument<800> configDoc;
-    // Deserialize JSON input
-    DeserializationError error = deserializeJson(configDoc, jsonStr);
-    if (!error) {
-      for (JsonPair keyValue: configDoc.as<JsonObject>()) {
-        // Store additional key-value pairs from serial input
-        mainDoc[keyValue.key()] = keyValue.value();    
-      }
-    }
-  }
+  sensorValues["distance"]["type"] = "cm";                            // Store distance type
 
   // Serialize the JSON object to a string
   String jsonString;
