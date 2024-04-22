@@ -10,7 +10,7 @@ content %}
       height="64"
       alt=""
     />
-    <span id="rain" class="sensor-value">0</span>
+    <span class="loader sensor-value" id="rain"></span>
   </div>
 </div>
 
@@ -23,7 +23,7 @@ content %}
       height="64"
       alt=""
     />
-    <span id="water" style="font-size: 60px">0</span>
+    <span class="loader sensor-value" id="water"></span>
   </div>
 </div>
 
@@ -36,7 +36,7 @@ content %}
       height="64"
       alt=""
     />
-    <span id="distance" style="font-size: 60px">0</span>
+    <span class="loader sensor-value" id="distance"></span>
   </div>
 </div>
 
@@ -51,12 +51,15 @@ content %}
     const deserializedData = JSON.parse(data);
     const receivedData = deserializedData.group11;
     if (receivedData) {
+      rain.classList.remove("loader");
       rain.innerHTML = receivedData.rain
         ? `${receivedData.rain.value} (${receivedData.rain.type})`
         : "";
+      water.classList.remove("loader");
       water.innerHTML = receivedData.water
         ? `${receivedData.water.value} (${receivedData.water.type})`
         : "";
+      distance.classList.remove("loader");
       distance.innerHTML = receivedData.distance
         ? `${receivedData.distance.value} CM`
         : "";

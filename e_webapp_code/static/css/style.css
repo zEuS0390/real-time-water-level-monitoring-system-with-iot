@@ -1,7 +1,7 @@
 body {
   padding: 0;
   margin: 0;
-  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   height: 100vh;
 }
 
@@ -39,7 +39,15 @@ body {
   padding: 16px;
   text-decoration: none;
   color: white;
-  background-color: gray;
+  border: solid 1px #0f172a;
+  border-radius: 10px;
+  margin: 4px;
+  transition: background-color 0.2s ease-in-out; /* Add transition for background color */
+}
+
+.sidebar a:hover {
+  border: solid 1px white;
+  transition: border 0.2s ease-in-out;
 }
 
 main {
@@ -65,6 +73,7 @@ main {
   margin-right: 0;
   margin-bottom: 8px;
   font-weight: bold;
+  user-select: none;
 }
 
 .sensor-details {
@@ -75,13 +84,34 @@ main {
   border-radius: 20px;
   padding: 20px;
   background-color: white;
+  color: #0f172a;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px,
     rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  cursor: pointer;
+}
+
+.sensor-details img {
+  user-select: none;
+}
+
+.sensor-details:hover {
+  background-color: #1e293b;
+  color: white;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
 .sensor-value {
-  color: #1e293b;
+  user-select: none;
   font-size: 60px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  background-color: rgb(43, 43, 43);
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: rgb(146, 146, 146);
 }
 
 @media screen and (max-width: 700px) {
@@ -95,13 +125,52 @@ main {
   }
   .sidebar a {
     float: left;
-    margin: 0;
-    gap: 2px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    margin-left: 2px;
+    margin-right: 0;
   }
   main {
     margin-left: 0;
   }
   .container {
     padding-top: 40px;
+  }
+  .sensor-value {
+    font-size: 14px;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .sensor-value {
+    font-size: 50px;
+  }
+}
+
+.loader {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #1e293b;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+.sensor-details:hover .loader {
+  border: 5px solid white;
+  background-color: #1e293b;
+  border-bottom-color: transparent;
+  transition: border 0.2s ease-in-out, background-color 0.2s ease-in-out,
+    border-bottom-color 0.2s ease-in-out;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
