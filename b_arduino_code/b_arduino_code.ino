@@ -56,7 +56,7 @@ void loop() {
   lcd.print(rainintensity.value);
   lcd.print(" ");
   lcd.print("W:");
-  lcd.print(waterlevel.value);
+  lcd.print(enumToString(waterlevel.type));
   lcd.print("          ");
 
   lcd.setCursor(0, 1);
