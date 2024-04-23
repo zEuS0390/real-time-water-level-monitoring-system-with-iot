@@ -11,7 +11,7 @@ login_manager = LoginManager()
 mqtt = Mqtt.Client(Mqtt.CallbackAPIVersion.VERSION2, f"MQTT-SOCKETIO-BRIDGE-{uuid.uuid4()}", clean_session=True)
 socketio = SocketIO()
 
-MQTT_BROKER_URL = 'localhost'
+MQTT_BROKER_URL = 'mosquitto'
 MQTT_BROKER_PORT = 1883         # default port for non-tls connection
 MQTT_USERNAME = 'user'          # set the username here if you need authentication for the broker
 MQTT_PASSWORD = 'pass123'       # set the password here if the broker demands authentication
@@ -36,7 +36,7 @@ def create_app():
   db.init_app(app)
   bcrypt.init_app(app)
   login_manager.init_app(app)
-  socketio.init_app(app)
+  socketio.init_app(app, async_mode="eventlet", cors_allowed_origins="*")
 
   with app.app_context():
     db.create_all()

@@ -3,14 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Login</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}"/>
 </head>
 <body>
-  <h1>Login</h1>
-    <form method="POST">
-      {{ form.hidden_tag() }} {{ form.username }} {{ form.password }} {{
-      form.submit }}
-    </form>
+    <div class="container">
+	    <form method="POST" class="login-form">
+	      <h2>Log In</h2>
+	      {{ form.hidden_tag() }} 
+	      <div class="input-group">
+		{{ form.username }} 
+	      </div>
+	      <div class="input-group">
+		{{ form.password }} 
+	      </div>
+	      <div class="input-group">
+		{{ form.submit }}
+	      </div>
+	    </form>
+	    <hr/>
+    </div>
   </body>
 </html>
 </body>

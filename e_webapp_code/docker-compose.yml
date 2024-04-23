@@ -1,0 +1,32 @@
+services:
+
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mosquitto
+    ports:
+      - "1883:1883"
+    volumes:
+      - "./mosquitto.conf:/mosquitto/config/mosquitto.conf"
+      - "./pwd_file:/mosquitto/config/pwd_file"
+
+  web:
+    build:
+      dockerfile: Dockerfile
+    container_name: web
+    ports:
+      - "5000:5000"
+    volumes:
+    - "./:/webapp"
+    depends_on:
+      - mosquitto
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro 
+    ports:
+      - "80:80"
+    depends_on:
+      - web
+
