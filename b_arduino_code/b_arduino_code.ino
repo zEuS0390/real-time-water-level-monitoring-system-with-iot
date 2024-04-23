@@ -14,16 +14,17 @@
 #define ULTRASONIC_SENSOR_TRIGGER_PIN       5
 #define ULTRASONIC_SENSOR_ECHO_PIN          6
 #define RAIN_HEAVY_THRESHOLD                300
-#define WATER_EMPTY_THRESHOLD               0
-#define WATER_LOW_THRESHOLD                 350
-#define WATER_MEDIUM_THRESHOLD              450
-#define WATER_HIGH_THRESHOLD                1023
+#define WATER_LEVEL_INDICATOR_LEVEL1_PIN    A0
+#define WATER_LEVEL_INDICATOR_LEVEL2_PIN    A1
+#define WATER_LEVEL_INDICATOR_LEVEL3_PIN    A2
 
 // Use the Group11Arduino namespace
 using namespace Group11Arduino;    
 
 // Create instances of classes
-WaterLevelSensor        waterlevel_sensor       (WATER_LEVEL_SENSOR_PIN);
+WaterLevelSensor        waterlevel_sensor       (WATER_LEVEL_INDICATOR_LEVEL1_PIN,
+                                                 WATER_LEVEL_INDICATOR_LEVEL2_PIN,
+                                                 WATER_LEVEL_INDICATOR_LEVEL3_PIN);
 RainSensor              rain_sensor             (RAIN_SENSOR_PIN);
 UltrasonicSensor        ultrasonic_sensor       (ULTRASONIC_SENSOR_TRIGGER_PIN,
                                                  ULTRASONIC_SENSOR_ECHO_PIN);
@@ -35,7 +36,7 @@ LiquidCrystal_I2C       lcd                     (LIQUID_CRYSTAL_I2C_ADDRESS,
 void setup() {
   Serial.begin(SERIAL_COMMUNICATION_BAUD_RATE);   // Initialize serial communication
   rain_sensor.init(INPUT);                        // Initialize rain sensor
-  waterlevel_sensor.init(INPUT);                  // Initialize water level sensor
+  waterlevel_sensor.init(INPUT, INPUT, INPUT);    // Initialize water level sensor
   ultrasonic_sensor.init(OUTPUT, INPUT);          // Initialize ultrasonic sensor
   lcd.init();                                     // Initialize LCD
   lcd.backlight();                                // Turn on LCD backlight
@@ -45,12 +46,9 @@ void setup() {
 void loop() {
 
   // Read sensor values
-  Result<RainIntensityType> rainintensity =  rain_sensor.read(RAIN_HEAVY_THRESHOLD);            // Read rain sensor
-  Result<WaterLevelType>    waterlevel    =  waterlevel_sensor.read(WATER_EMPTY_THRESHOLD,
-                                                                    WATER_LOW_THRESHOLD,
-                                                                    WATER_MEDIUM_THRESHOLD,
-                                                                    WATER_HIGH_THRESHOLD);      // Read water level sensor
-  Result<DistanceType>      distance      =  ultrasonic_sensor.read();                          // Read ultrasonic sensor
+  Result<RainIntensityType> rainintensity =  rain_sensor.read(RAIN_HEAVY_THRESHOLD);  // Read rain sensor
+  Result<WaterLevelType>    waterlevel    =  waterlevel_sensor.read();                // Read water level sensor
+  Result<DistanceType>      distance      =  ultrasonic_sensor.read();                // Read ultrasonic sensor
 
   // Print sensor values on LCD
   lcd.setCursor(0, 0);
