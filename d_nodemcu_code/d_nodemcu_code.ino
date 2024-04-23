@@ -5,7 +5,7 @@
 const char* WIFI_NETWORK_DEFAULT_SSID = "krx";
 const char* WIFI_NETWORK_DEFAULT_PASSWORD = "taigamxmn";
 
-const char* mqtt_server = "192.168.148.197";
+const char* mqtt_server = "group11.zeusjames.com";
 const char* mqtt_username = "user";
 const char* mqtt_password = "pass123";
 
@@ -33,7 +33,6 @@ void connectToWiFiNetwork(const char* ssid, const char* password, unsigned long 
 
   if (WiFi.status() == WL_CONNECTED) {
     randomSeed(micros());
-
     StaticJsonDocument<400> wifiSuccessDoc;
     wifiSuccessDoc["title"] = "wifi success";
     wifiSuccessDoc["msg"] = "connected";
