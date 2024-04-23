@@ -5,3 +5,5 @@ flask-wtf
 flask-bcrypt
 paho-mqtt
 flask-socketio
+gunicorn
+eventlet
