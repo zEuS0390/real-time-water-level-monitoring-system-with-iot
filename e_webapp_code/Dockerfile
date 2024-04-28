@@ -13,4 +13,4 @@ EXPOSE 5000
 
 ENV PYTHONUNBUFFERED=1
 
-CMD ["gunicorn", "--worker-class", "eventlet", "--workers", "1", "--bind", "0.0.0.0:5000", "--log-level", "debug", "wsgi:app"]
+CMD ["gunicorn", "--worker-class", "eventlet", "--workers", "1", "--bind", "0.0.0.0:5000", "wsgi:app"]

@@ -1,6 +1,7 @@
 services:
 
   mosquitto:
+    restart: unless-stopped
     image: eclipse-mosquitto
     container_name: mosquitto
     ports:
@@ -10,6 +11,7 @@ services:
       - "./pwd_file:/mosquitto/config/pwd_file"
 
   web:
+    restart: unless-stopped
     build:
       dockerfile: Dockerfile
     container_name: web
@@ -21,6 +23,7 @@ services:
       - mosquitto
 
   nginx:
+    restart: unless-stopped
     image: nginx:latest
     container_name: nginx
     volumes:
