@@ -11,13 +11,14 @@ body {
 
 .container {
   background-color: #fff;
-  border-radius: 10px;
+  border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 40px;
+  width: 300px;
 }
 
-.login-form {
-  width: 200px;
+.register-form {
+  max-width: 300px;
   margin: 0 auto;
 }
 

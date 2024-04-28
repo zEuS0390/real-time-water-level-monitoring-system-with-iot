@@ -34,9 +34,10 @@ body {
 }
 
 .sidebar a {
+  font-size: 14px;
   display: block;
   text-align: center;
-  padding: 16px;
+  padding: 10px;
   text-decoration: none;
   color: white;
   border: solid 1px #0f172a;
@@ -57,10 +58,10 @@ main {
 }
 
 .container {
-  padding-left: 40px;
-  padding-right: 40px;
+  padding-left: 20px;
+  padding-right: 20px;
   padding-top: 80px;
-  padding-bottom: 40px;
+  padding-bottom: 20px;
 }
 
 .sensor-container {
@@ -69,10 +70,11 @@ main {
 
 .sensor-title {
   margin-top: 0;
-  margin-left: 20px;
+  margin-left: 18px;
   margin-right: 0;
   margin-bottom: 8px;
   font-weight: bold;
+  font-size: 14px;
   user-select: none;
 }
 
@@ -102,7 +104,9 @@ main {
 
 .sensor-value {
   user-select: none;
-  font-size: 60px;
+  font-size: 42px;
+  margin: 0;
+  padding: 0;
 }
 
 ::-webkit-scrollbar {
@@ -112,6 +116,39 @@ main {
 ::-webkit-scrollbar-thumb {
   border-radius: 10px;
   background-color: rgb(146, 146, 146);
+}
+
+@media screen and (max-width: 320px) {
+  .header h3 {
+    font-size: 12px;
+  }
+}
+
+@media screen and (min-width: 321px) and (max-width: 480px) {
+  .header h3 {
+    font-size: 14px;
+  }
+  .sensor-value {
+    font-size: 30px;
+  }
+}
+
+@media screen and (min-width: 480px) and (max-width: 640px) {
+  .header h3 {
+    font-size: 18px;
+  }
+}
+
+@media screen and (min-width: 641px) and (max-width: 960px) {
+}
+
+@media screen and (min-width: 961px) and (max-width: 1024px) {
+}
+
+@media screen and (min-width: 1024px) {
+  .sensor-value {
+    font-size: 50px;
+  }
 }
 
 @media screen and (max-width: 700px) {
@@ -136,16 +173,8 @@ main {
   .container {
     padding-top: 40px;
   }
-  .sensor-value {
-    font-size: 14px;
-  }
 }
 
-@media screen and (max-width: 1024px) {
-  .sensor-value {
-    font-size: 50px;
-  }
-}
 
 .loader {
   width: 48px;
@@ -172,5 +201,35 @@ main {
   }
   100% {
     transform: rotate(360deg);
+  }
+}
+
+.critical {
+  background-color: red;
+  color: white;
+  animation: pulse 0.8s infinite alternate;
+  transition: opacity 1s ease-in-and-out;
+}
+
+.alert{
+  background-color: orange;
+  color: white;
+}
+
+.warning {
+  background-color: yellow;
+}
+
+.safe {
+  background-color: green;
+  color: white;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
   }
 }

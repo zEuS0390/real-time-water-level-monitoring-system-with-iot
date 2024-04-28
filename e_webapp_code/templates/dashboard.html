@@ -10,7 +10,7 @@ content %}
       height="64"
       alt=""
     />
-    <span class="loader sensor-value" id="rain"></span>
+    <p class="loader sensor-value" id="rain"></p>
   </div>
 </div>
 
@@ -23,7 +23,7 @@ content %}
       height="64"
       alt=""
     />
-    <span class="loader sensor-value" id="water"></span>
+    <p class="loader sensor-value" id="water"></p>
   </div>
 </div>
 
@@ -36,7 +36,7 @@ content %}
       height="64"
       alt=""
     />
-    <span class="loader sensor-value" id="distance"></span>
+    <p class="loader sensor-value" id="distance"></p>
   </div>
 </div>
 
@@ -52,17 +52,58 @@ content %}
     const receivedData = deserializedData.group11;
     if (receivedData) {
       rain.classList.remove("loader");
-      rain.innerHTML = receivedData.rain
+      rain.textContent = receivedData.rain
         ? `${receivedData.rain.value} (${receivedData.rain.type})`
         : "";
       water.classList.remove("loader");
-      water.innerHTML = receivedData.water
+      water.textContent = receivedData.water
         ? `${receivedData.water.type}`
         : "";
       distance.classList.remove("loader");
-      distance.innerHTML = receivedData.distance
+      distance.textContent = receivedData.distance
         ? `${receivedData.distance.value} CM`
         : "";
+	if (receivedData.rain.type === "HEAVY") {
+		rain.parentNode.classList.add("alert");
+		rain.parentNode.classList.remove("safe");
+	} else {
+		rain.parentNode.classList.add("safe");
+		rain.parentNode.classList.remove("alert");
+	}
+    	if (receivedData.water.type === "CRITICAL") {
+		water.parentNode.classList.add("critical");
+		water.parentNode.classList.remove("alert");
+		water.parentNode.classList.remove("safe");
+		water.parentNode.classList.remove("warning");
+	}
+	else if (receivedData.water.type === "HIGH") {
+		water.parentNode.classList.add("alert");
+		water.parentNode.classList.remove("safe");
+		water.parentNode.classList.remove("warning");
+		water.parentNode.classList.remove("critical");
+	} 
+	else if (receivedData.water.type === "MEDIUM") {
+		water.parentNode.classList.add("warning");
+		water.parentNode.classList.remove("alert");
+		water.parentNode.classList.remove("safe");
+		water.parentNode.classList.remove("critical");
+	}
+	else if (receivedData.water.type === "LOW") {
+		water.parentNode.classList.add("safe");
+		water.parentNode.classList.remove("warning");
+		water.parentNode.classList.remove("alert");
+		water.parentNode.classList.remove("critical");
+	}
+	else {
+		water.parentNode.classList.remove("safe");
+		water.parentNode.classList.remove("warning");
+		water.parentNode.classList.remove("alert");
+		water.parentNode.classList.remove("critical");
+	}
+	
+	if (Number(receivedData.distance.value) > 0) {
+		distance.parentNode.classList.add("safe");
+	}
     }
   });
 </script>
