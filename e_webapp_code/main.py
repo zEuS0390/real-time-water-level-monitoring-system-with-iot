@@ -7,11 +7,15 @@ app = create_app()
 
 @socketio.on('connect')
 def connect_handler():
-    if current_user.is_authenticated:
-        print(current_user.username)
-    else:
+    try:
+        if current_user.is_authenticated:
+            print(f"{current_user.username} IS AUTHENTICATED?: {current_user.is_authenticated}")
+        else:
+            disconnect()
+            return False  # not allowed here
+    except:
         disconnect()
-        return False  # not allowed here
+        return False
 
 app.register_blueprint(views_bp)
 
