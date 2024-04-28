@@ -1,10 +1,10 @@
 from flask import Flask
 from flask_bcrypt import Bcrypt
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 import paho.mqtt.client as Mqtt
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, disconnect
 from db import db, User
-import uuid
+import uuid, time, json
 
 bcrypt = Bcrypt()
 login_manager = LoginManager()
@@ -16,6 +16,9 @@ MQTT_BROKER_PORT = 1883         # default port for non-tls connection
 MQTT_USERNAME = 'user'          # set the username here if you need authentication for the broker
 MQTT_PASSWORD = 'pass123'       # set the password here if the broker demands authentication
 
+DEVICE_OFFLINE_THRESHOLD = 10
+last_mqtt_message_time = time.time()
+
 def handle_mqtt_connect(client, userdata, flags, reasonCode, properties):
     if reasonCode == 0: 
         print('Connected successfully')
@@ -23,9 +26,32 @@ def handle_mqtt_connect(client, userdata, flags, reasonCode, properties):
     else: print('Bad connection. Code:', reasonCode)
     
 def handle_mqtt_message(client, userdata, message):
+    global last_mqtt_message_time
     topic = message.topic
     payload = message.payload.decode()
     socketio.emit(topic, payload)
+    last_mqtt_message_time = time.time()
+
+def get_device_status():
+    current_time = time.time()
+    if current_time - last_mqtt_message_time > DEVICE_OFFLINE_THRESHOLD: return json.dumps({"device_status": "offline"})
+    else: return json.dumps({"device_status": "online"})
+
+@socketio.on('connect')
+def connect_handler():
+    try:
+        if current_user.is_authenticated:
+            print(f"{current_user.username} IS AUTHENTICATED?: {current_user.is_authenticated}")
+        else:
+            disconnect()
+            return False  # not allowed here
+    except:
+        disconnect()
+        return False
+
+@socketio.on("get_device_status")
+def handle_get_device_status():
+    socketio.emit("device_status", get_device_status())
 
 def create_app():
   app = Flask(__name__)

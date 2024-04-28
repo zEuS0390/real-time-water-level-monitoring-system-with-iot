@@ -2,20 +2,9 @@
 content %}
 
 <div class="sensor-container">
-  <p class="sensor-title">RAIN INTENSITY</p>
-  <div class="sensor-details">
-    <img
-      src="{{ url_for('static', filename='images/rain.png') }}"
-      width="64"
-      height="64"
-      alt=""
-    />
-    <p class="loader sensor-value" id="rain"></p>
+  <div>
+    <p class="sensor-title">WATER LEVEL STATUS <span id="water-level-device-status" class="device-status-indicator"></span></p>
   </div>
-</div>
-
-<div class="sensor-container">
-  <p class="sensor-title">WATER LEVEL</p>
   <div class="sensor-details">
     <img
       src="{{ url_for('static', filename='images/water.png') }}"
@@ -27,49 +16,36 @@ content %}
   </div>
 </div>
 
-<div class="sensor-container">
-  <p class="sensor-title">DISTANCE</p>
-  <div class="sensor-details">
-    <img
-      src="{{ url_for('static', filename='images/distance.png') }}"
-      width="64"
-      height="64"
-      alt=""
-    />
-    <p class="loader sensor-value" id="distance"></p>
-  </div>
-</div>
-
 <script type="text/javascript" charset="utf-8">
   let socket = io();
-  const rain = document.querySelector("#rain");
   const water = document.querySelector("#water");
-  const distance = document.querySelector("#distance");
-
+  const water_device_status = document.querySelector("#water-level-device-status");
   socket.on("connect", () => console.log("I'm connected!"));
+  socket.on("device_status", (data) => {
+    const deserializedData = JSON.parse(data);
+    const device_status = deserializedData.device_status;
+    if (device_status === "online") {
+	water_device_status.classList.add("green");
+	water_device_status.classList.remove("red");
+    } else {
+	water.textContent = "";
+    	water.classList.add("loader");
+	water.parentNode.classList.remove("safe");
+	water.parentNode.classList.remove("warning");
+	water.parentNode.classList.remove("alert");
+	water.parentNode.classList.remove("critical");
+	water_device_status.classList.add("red");
+	water_device_status.classList.remove("green");
+    }
+  });
   socket.on("group11", (data) => {
     const deserializedData = JSON.parse(data);
     const receivedData = deserializedData.group11;
     if (receivedData) {
-      rain.classList.remove("loader");
-      rain.textContent = receivedData.rain
-        ? `${receivedData.rain.value} (${receivedData.rain.type})`
-        : "";
       water.classList.remove("loader");
       water.textContent = receivedData.water
         ? `${receivedData.water.type}`
         : "";
-      distance.classList.remove("loader");
-      distance.textContent = receivedData.distance
-        ? `${receivedData.distance.value} CM`
-        : "";
-	if (receivedData.rain.type === "HEAVY") {
-		rain.parentNode.classList.add("alert");
-		rain.parentNode.classList.remove("safe");
-	} else {
-		rain.parentNode.classList.add("safe");
-		rain.parentNode.classList.remove("alert");
-	}
     	if (receivedData.water.type === "CRITICAL") {
 		water.parentNode.classList.add("critical");
 		water.parentNode.classList.remove("alert");
@@ -100,12 +76,9 @@ content %}
 		water.parentNode.classList.remove("alert");
 		water.parentNode.classList.remove("critical");
 	}
-	
-	if (Number(receivedData.distance.value) > 0) {
-		distance.parentNode.classList.add("safe");
-	}
     }
   });
+  setInterval(() => socket.emit("get_device_status"), 1000);
 </script>
 
 {% endblock %}

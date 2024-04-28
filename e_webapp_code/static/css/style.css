@@ -90,13 +90,18 @@ main {
   box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px,
     rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
   cursor: pointer;
+  transition: background-color 0.5s ease, color 0.5s ease; 
 }
 
 .sensor-details img {
   user-select: none;
 }
 
-.sensor-details:hover {
+.sensor-details:hover,
+.sensor-details.safe:hover,
+.sensor-details.warning:hover,
+.sensor-details.alert:hover,
+.sensor-details.critical:hover {
   background-color: #1e293b;
   color: white;
   transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
@@ -204,25 +209,39 @@ main {
   }
 }
 
-.critical {
+.sensor-details.critical {
   background-color: red;
   color: white;
-  animation: pulse 0.8s infinite alternate;
-  transition: opacity 1s ease-in-and-out;
+  animation: pulse 0.8s infinite alternate; */
 }
 
-.alert{
+.sensor-details.alert{
   background-color: orange;
   color: white;
 }
 
-.warning {
+.sensor-details.warning {
   background-color: yellow;
 }
 
-.safe {
+.sensor-details.safe {
   background-color: green;
   color: white;
+}
+
+.device-status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.device-status-indicator.green {
+  background-color: green;
+}
+
+.device-status-indicator.red {
+  background-color: red;
 }
 
 @keyframes pulse {
@@ -233,3 +252,4 @@ main {
     opacity: 0.5;
   }
 }
+
