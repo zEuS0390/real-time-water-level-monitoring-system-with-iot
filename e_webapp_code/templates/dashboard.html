@@ -3,7 +3,13 @@ content %}
 
 <div class="sensor-container">
   <div>
-    <p class="sensor-title">WATER LEVEL STATUS <span id="water-level-device-status" class="device-status-indicator"></span></p>
+    <p class="sensor-title">
+      WATER LEVEL STATUS
+      <span
+        id="water-level-device-status"
+        class="device-status-indicator"
+      ></span>
+    </p>
   </div>
   <div class="sensor-details">
     <img
@@ -19,23 +25,25 @@ content %}
 <script type="text/javascript" charset="utf-8">
   let socket = io();
   const water = document.querySelector("#water");
-  const water_device_status = document.querySelector("#water-level-device-status");
+  const water_device_status = document.querySelector(
+    "#water-level-device-status"
+  );
   socket.on("connect", () => console.log("I'm connected!"));
   socket.on("device_status", (data) => {
     const deserializedData = JSON.parse(data);
     const device_status = deserializedData.device_status;
     if (device_status === "online") {
-	water_device_status.classList.add("green");
-	water_device_status.classList.remove("red");
+      water_device_status.classList.add("green");
+      water_device_status.classList.remove("red");
     } else {
-	water.textContent = "";
-    	water.classList.add("loader");
-	water.parentNode.classList.remove("safe");
-	water.parentNode.classList.remove("warning");
-	water.parentNode.classList.remove("alert");
-	water.parentNode.classList.remove("critical");
-	water_device_status.classList.add("red");
-	water_device_status.classList.remove("green");
+      water.textContent = "";
+      water.classList.add("loader");
+      water.parentNode.classList.remove("safe");
+      water.parentNode.classList.remove("warning");
+      water.parentNode.classList.remove("alert");
+      water.parentNode.classList.remove("critical");
+      water_device_status.classList.add("red");
+      water_device_status.classList.remove("green");
     }
   });
   socket.on("group11", (data) => {
@@ -46,39 +54,35 @@ content %}
       water.textContent = receivedData.water
         ? `${receivedData.water.type}`
         : "";
-    	if (receivedData.water.type === "CRITICAL") {
-		water.parentNode.classList.add("critical");
-		water.parentNode.classList.remove("alert");
-		water.parentNode.classList.remove("safe");
-		water.parentNode.classList.remove("warning");
-	}
-	else if (receivedData.water.type === "HIGH") {
-		water.parentNode.classList.add("alert");
-		water.parentNode.classList.remove("safe");
-		water.parentNode.classList.remove("warning");
-		water.parentNode.classList.remove("critical");
-	} 
-	else if (receivedData.water.type === "MEDIUM") {
-		water.parentNode.classList.add("warning");
-		water.parentNode.classList.remove("alert");
-		water.parentNode.classList.remove("safe");
-		water.parentNode.classList.remove("critical");
-	}
-	else if (receivedData.water.type === "LOW") {
-		water.parentNode.classList.add("safe");
-		water.parentNode.classList.remove("warning");
-		water.parentNode.classList.remove("alert");
-		water.parentNode.classList.remove("critical");
-	}
-	else {
-		water.parentNode.classList.remove("safe");
-		water.parentNode.classList.remove("warning");
-		water.parentNode.classList.remove("alert");
-		water.parentNode.classList.remove("critical");
-	}
+      if (receivedData.water.type === "CRITICAL") {
+        water.parentNode.classList.add("critical");
+        water.parentNode.classList.remove("alert");
+        water.parentNode.classList.remove("safe");
+        water.parentNode.classList.remove("warning");
+      } else if (receivedData.water.type === "HIGH") {
+        water.parentNode.classList.add("alert");
+        water.parentNode.classList.remove("safe");
+        water.parentNode.classList.remove("warning");
+        water.parentNode.classList.remove("critical");
+      } else if (receivedData.water.type === "MEDIUM") {
+        water.parentNode.classList.add("warning");
+        water.parentNode.classList.remove("alert");
+        water.parentNode.classList.remove("safe");
+        water.parentNode.classList.remove("critical");
+      } else if (receivedData.water.type === "LOW") {
+        water.parentNode.classList.add("safe");
+        water.parentNode.classList.remove("warning");
+        water.parentNode.classList.remove("alert");
+        water.parentNode.classList.remove("critical");
+      } else {
+        water.parentNode.classList.remove("safe");
+        water.parentNode.classList.remove("warning");
+        water.parentNode.classList.remove("alert");
+        water.parentNode.classList.remove("critical");
+      }
     }
   });
-  setInterval(() => socket.emit("get_device_status"), 1000);
+  // setInterval(() => socket.emit("get_device_status"), 1000);
 </script>
 
 {% endblock %}
