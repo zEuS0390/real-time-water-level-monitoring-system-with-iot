@@ -2,12 +2,12 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 
-const char* WIFI_NETWORK_DEFAULT_SSID = "krx";
-const char* WIFI_NETWORK_DEFAULT_PASSWORD = "taigamxmn";
+const char* WIFI_NETWORK_DEFAULT_SSID = "<wifi-ssid>";
+const char* WIFI_NETWORK_DEFAULT_PASSWORD = "<wifi-password>";
 
-const char* mqtt_server = "group11.zeusjames.com";
-const char* mqtt_username = "user";
-const char* mqtt_password = "pass123";
+const char* mqtt_server = "<mqtt-server-hostname>";
+const char* mqtt_username = "<mqtt-server-username>";
+const char* mqtt_password = "<mqtt-server-password>";
 
 WiFiClient espClient;
 PubSubClient client(espClient); 
@@ -46,6 +46,7 @@ void connectToWiFiNetwork(const char* ssid, const char* password, unsigned long 
     String wifiErrorStr;
     serializeJson(wifiErrorDoc, wifiErrorStr);
     Serial.println(wifiErrorStr);
+    delay(5000);
   }
 }
 
@@ -94,19 +95,23 @@ void setup() {
   connectToWiFiNetwork(WIFI_NETWORK_DEFAULT_SSID, WIFI_NETWORK_DEFAULT_PASSWORD, 10000);
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
+  pinMode(D8, OUTPUT);
 }
 
 void loop() {
+  if (WiFi.status() != WL_CONNECTED) {
+    connectToWiFiNetwork(WIFI_NETWORK_DEFAULT_SSID, WIFI_NETWORK_DEFAULT_PASSWORD, 10000);
+  }
   if (WiFi.status() == WL_CONNECTED && !client.connected()) {
     reconnect();
   }
   while (Serial.available() > 0) {
+    digitalWrite(D8, HIGH);
     String jsonStr = Serial.readStringUntil('\n');
     StaticJsonDocument<800> mainDoc;
     DeserializationError error = deserializeJson(mainDoc, jsonStr);
     if (!error) {
       if (mainDoc.containsKey("wifi")) {
-
         if (mainDoc["wifi"].containsKey("ssid") && mainDoc["wifi"].containsKey("password")) {
           client.disconnect();
           WiFi.disconnect();
@@ -114,7 +119,6 @@ void loop() {
           const char* password = mainDoc["wifi"]["password"];
           connectToWiFiNetwork(ssid, password, 10000);
         }
-        
       }
       client.publish("group11", jsonStr.c_str());
     } else {
@@ -126,6 +130,8 @@ void loop() {
       Serial.println(jsonErrorStr);
     }
   }
-  delay(1000);
+  delay(50);
+  digitalWrite(D8, LOW);
+  delay(50);
   client.loop();
 }
