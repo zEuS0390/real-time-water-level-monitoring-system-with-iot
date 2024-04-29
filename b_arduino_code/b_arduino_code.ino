@@ -2,21 +2,23 @@
 #include <Group11Arduino.h>
 #include <ArduinoJson.h>
 #include <LiquidCrystal_I2C.h>
-#include <HardwareSerial.h>
+#include <SoftwareSerial.h>
 
 // Define constants for configuration
-#define SERIAL_COMMUNICATION_BAUD_RATE      9600
-#define LIQUID_CRYSTAL_I2C_ADDRESS          0x27
-#define LIQUID_CRYSTAL_NUMBER_OF_COLUMNS    16
-#define LIQUID_CRYSTAL_NUMBER_OF_ROWS       2
-#define WATER_LEVEL_SENSOR_PIN              A0
-#define RAIN_SENSOR_PIN                     A3
-#define ULTRASONIC_SENSOR_TRIGGER_PIN       5
-#define ULTRASONIC_SENSOR_ECHO_PIN          6
-#define RAIN_HEAVY_THRESHOLD                300
-#define WATER_LEVEL_INDICATOR_LEVEL1_PIN    A0
-#define WATER_LEVEL_INDICATOR_LEVEL2_PIN    A1
-#define WATER_LEVEL_INDICATOR_LEVEL3_PIN    A2
+#define SERIAL_COMMUNICATION_BAUD_RATE        9600
+#define ESP8266_SERIAL_COMMUNICATION_RX_PIN   2
+#define ESP8266_SERIAL_COMMUNICATION_TX_PIN   3
+#define LIQUID_CRYSTAL_I2C_ADDRESS            0x27
+#define LIQUID_CRYSTAL_NUMBER_OF_COLUMNS      16
+#define LIQUID_CRYSTAL_NUMBER_OF_ROWS         2
+#define RAIN_SENSOR_PIN                       A4
+#define ULTRASONIC_SENSOR_TRIGGER_PIN         5
+#define ULTRASONIC_SENSOR_ECHO_PIN            6
+#define RAIN_HEAVY_THRESHOLD                  300
+#define WATER_LEVEL_INDICATOR_LEVEL1_PIN      A0
+#define WATER_LEVEL_INDICATOR_LEVEL2_PIN      A1
+#define WATER_LEVEL_INDICATOR_LEVEL3_PIN      A2
+#define WATER_LEVEL_INDICATOR_LEVEL4_PIN      A3
 
 // Use the Group11Arduino namespace
 using namespace Group11Arduino;    
@@ -24,22 +26,26 @@ using namespace Group11Arduino;
 // Create instances of classes
 WaterLevelSensor        waterlevel_sensor       (WATER_LEVEL_INDICATOR_LEVEL1_PIN,
                                                  WATER_LEVEL_INDICATOR_LEVEL2_PIN,
-                                                 WATER_LEVEL_INDICATOR_LEVEL3_PIN);
+                                                 WATER_LEVEL_INDICATOR_LEVEL3_PIN,
+                                                 WATER_LEVEL_INDICATOR_LEVEL4_PIN);
 RainSensor              rain_sensor             (RAIN_SENSOR_PIN);
 UltrasonicSensor        ultrasonic_sensor       (ULTRASONIC_SENSOR_TRIGGER_PIN,
                                                  ULTRASONIC_SENSOR_ECHO_PIN);
 LiquidCrystal_I2C       lcd                     (LIQUID_CRYSTAL_I2C_ADDRESS, 
                                                  LIQUID_CRYSTAL_NUMBER_OF_COLUMNS,
                                                  LIQUID_CRYSTAL_NUMBER_OF_ROWS);
+SoftwareSerial          ESP8266Serial           (ESP8266_SERIAL_COMMUNICATION_RX_PIN,
+                                                 ESP8266_SERIAL_COMMUNICATION_TX_PIN);
 
 // Setup function, executed once on startup
 void setup() {
-  Serial.begin(SERIAL_COMMUNICATION_BAUD_RATE);   // Initialize serial communication
-  rain_sensor.init(INPUT);                        // Initialize rain sensor
-  waterlevel_sensor.init(INPUT, INPUT, INPUT);    // Initialize water level sensor
-  ultrasonic_sensor.init(OUTPUT, INPUT);          // Initialize ultrasonic sensor
-  lcd.init();                                     // Initialize LCD
-  lcd.backlight();                                // Turn on LCD backlight
+  Serial.begin(SERIAL_COMMUNICATION_BAUD_RATE);         // Initialize serial communication
+  ESP8266Serial.begin(SERIAL_COMMUNICATION_BAUD_RATE);  // Initialize serial communication for NodeMCU ESP8266
+  rain_sensor.init(INPUT);                              // Initialize rain sensor
+  waterlevel_sensor.init(INPUT, INPUT, INPUT, INPUT);   // Initialize water level sensor
+  ultrasonic_sensor.init(OUTPUT, INPUT);                // Initialize ultrasonic sensor
+  lcd.init();                                           // Initialize LCD
+  lcd.backlight();                                      // Turn on LCD backlight
 }
 
 // Main loop function, continuously reads sensor values and prints them
@@ -82,8 +88,13 @@ void loop() {
   String jsonString;
   serializeJson(mainDoc, jsonString);
 
-  // Print the JSON string over the serial port
-  Serial.println(jsonString);
+  while (ESP8266Serial.available() > 0) {
+    String receivedData = ESP8266Serial.readStringUntil('\n');
+    Serial.println(receivedData);
+  }
 
-  delay(1000);  // Delay for 1 second
+  // Print the JSON string over the serial port
+  ESP8266Serial.println(jsonString);
+
+  delay(100);  // Delay for 100 milliseconds
 }
