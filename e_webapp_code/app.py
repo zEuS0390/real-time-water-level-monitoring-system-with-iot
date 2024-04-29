@@ -1,10 +1,13 @@
-from flask import Flask
-from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, current_user
-import paho.mqtt.client as Mqtt
 from flask_socketio import SocketIO, disconnect
+from engineio.payload import Payload
+from flask_bcrypt import Bcrypt
+import paho.mqtt.client as Mqtt
+from flask import Flask
 from db import db, User
 import uuid, time, json
+
+Payload.max_decode_packets = 500
 
 bcrypt = Bcrypt()
 login_manager = LoginManager()
