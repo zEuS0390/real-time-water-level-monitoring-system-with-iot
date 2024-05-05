@@ -12,13 +12,15 @@ services:
 
   web:
     restart: unless-stopped
+    # You can replace this with >> image: <image_from_the_docker_container_registry>
+    # Here's an example >> image: ghcr.io/zeus0390/water-level-indicator-with-iot/web-app:latest
     build:
       dockerfile: Dockerfile
     container_name: web
     ports:
       - "5000:5000"
     volumes:
-    - "./:/webapp"
+      - "./:/webapp"
     depends_on:
       - mosquitto
 
@@ -27,7 +29,7 @@ services:
     image: nginx:latest
     container_name: nginx
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro 
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
     ports:
       - "80:80"
     depends_on:
